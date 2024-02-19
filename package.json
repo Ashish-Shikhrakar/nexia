@@ -1,14 +1,20 @@
 {
-  "name": "nexia",
+  "name": "package.json",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "core-js-compat": "^3.4.7",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
+    "react-router-dom": "^6.21.3",
+    "react-scripts": "^5.0.1",
+    "socket.io": "^4.7.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -34,5 +40,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+  },
+  "main": "index.js",
+  "author": "Ashish-Shikhrakar <shikhrakar.e@gmail.com>",
+  "license": "MIT"
 }
