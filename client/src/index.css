@@ -257,6 +257,7 @@ a {
   flex-direction: column;
   height: 100vh;
   color: var(--host-party);
+  position: relative;
 }
 
 .waitPage {
@@ -271,6 +272,7 @@ a {
   flex-direction: column;
   height: 100vh;
   color: var(--banner-text);
+  position: relative;
 }
 
 .waitPagepStyle {
@@ -289,11 +291,9 @@ a {
 }
 
 .memberList {
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-left: 120px;
+  position: absolute;
+  top: 100px;
+  left: 100px;
 }
 
 .nickNameTextBox1 {

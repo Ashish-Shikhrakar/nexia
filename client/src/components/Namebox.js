@@ -1,5 +1,10 @@
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-const Namebox = ({ isHost }) => {
+import { SocketContext } from "../context/context";
+
+const Namebox = ({ isHost, onNameSubmit }) => {
+  const [name, setName] = useState("");
+  const socket = useContext(SocketContext);
   let inputStyle = "nickNameTextBox1";
   let namecolor = "#3D5D91";
   if (!isHost) {
@@ -24,9 +29,23 @@ const Namebox = ({ isHost }) => {
         type="text"
         placeholder="Your Nickname"
         className={inputStyle}
+        onChange={(e) => {
+          setName(e.target.value);
+          onNameSubmit(e.target.value.trim());
+          socket.emit("send_name", e.target.value, socket.id);
+        }}
       ></input>
       <Link to="/playmusic" style={{ width: "100%" }}>
-        {isHost && <button className="hostPartyButton">Start the party</button>}
+        {isHost && (
+          <button
+            className="hostPartyButton"
+            onClick={() => {
+              socket.emit("start_party");
+            }}
+          >
+            Start the party
+          </button>
+        )}
       </Link>
     </div>
   );
