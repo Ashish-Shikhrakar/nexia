@@ -6,34 +6,17 @@ import Ftmessage from "../components/Ftmessage";
 import Memberlist from "../components/Memberlist";
 import { logoPropertiesForHostPage } from "../config";
 import useDynamicPageTitle from "../components/Pagetitle";
-// import io from "socket.io-client";
 import { useContext, useState } from "react";
 import { SocketContext } from "../context/context";
 import { useNavigate } from "react-router-dom";
-// const socket = io.connect("http://localhost:8000");
 
 const Host = (props) => {
   const socket = useContext(SocketContext);
 
   console.log(socket, SocketContext);
   const Navigate = useNavigate();
-  // useEffect(() => {
-  //   socketRef.current = socket;
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
-
-  // function connectServer() {
-  //   const socket = io.connect("http://localhost:8000");
-  //   socketRef.current = socket;
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }
 
   useDynamicPageTitle({ title: props.title });
-  // const socketRef = useRef(socket);
   const [members, setMembers] = useState([]);
 
   const handleNameSubmit = (name, id) => {
@@ -43,7 +26,6 @@ const Host = (props) => {
       updatedMembers[existingUserIndex].name = name;
       setMembers(updatedMembers);
     } else {
-      // Add the new user to the members list
       setMembers([...members, { id: id, name: name }]);
     }
   };
@@ -61,7 +43,7 @@ const Host = (props) => {
   });
 
   socket.on("party_started", () => {
-    Navigate("/playmusic");
+    Navigate(`/playmusic?host=${true}`);
   });
 
   socket.on("user_leave", (message) => {
@@ -74,7 +56,6 @@ const Host = (props) => {
       <Memberlist members={members} />
       <div>
         <Namebox isHost={true} onNameSubmit={handleNameSubmit} />
-        {/* <button onClick={connectServer}> Start Hosting</button> */}
         <SettingsBox isHost={true} />
         <Ftmessage isDarkBG={false} />
         <Ftlinks marginTop="5px" />

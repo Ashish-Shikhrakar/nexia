@@ -6,21 +6,11 @@ import SettingsBox from "../components/Settingsbox";
 import Memberlist from "../components/Memberlist";
 import { logoPropertiesForWaitPage } from "../config";
 import useDynamicPageTitle from "../components/Pagetitle";
-// import io from "socket.io-client";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { SocketContext } from "../context/context";
 import { useNavigate } from "react-router-dom";
-// const socket = io.connect("http://localhost:8000");
 
 const Waitpage = (props) => {
-  // const [socket, setSocket] = useState();
-  // useEffect(() => {
-  //   setSocket(io.connect("http://localhost:8000"));
-
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
   const socket = useContext(SocketContext);
   const Navigate = useNavigate();
   useDynamicPageTitle({ title: props.title });
@@ -48,7 +38,7 @@ const Waitpage = (props) => {
   });
 
   socket.on("party_started", () => {
-    Navigate("/playmusic");
+    Navigate(`/playmusic?host=${false}`);
   });
 
   socket.on("user_leave", (message) => {

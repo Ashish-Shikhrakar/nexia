@@ -1,15 +1,19 @@
 import Pause from "../assets/pause.png";
 import Play from "../assets/play.png";
-// import Audioimg from "../assets/Audio.png";
-import { SocketContext } from "../context/context";
 
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useRef } from "react";
 import SongPauseButton from "./SongPauseButton";
 import PlayingContainer from "./PlayingContainer";
 
-const SongWrapper = ({ audioRef }) => {
+const SongWrapper = ({
+  audioRef,
+  host,
+  songIndex,
+  onSongEnd,
+  songQueueLength,
+  handleSongSelect,
+}) => {
   const canvasRef = useRef(null);
-  const socket = useContext(SocketContext);
   const [musicControl, setMusicControl] = useState(Pause);
 
   // useEffect(() => {
@@ -65,25 +69,37 @@ const SongWrapper = ({ audioRef }) => {
 
   const toggleMusic = () => {
     if (audioRef.current.paused) {
+      audioRef.current.play();
       setMusicControl(Pause);
-      socket.emit("startAudio");
     } else {
+      audioRef.current.pause();
       setMusicControl(Play);
-      socket.emit("stopAudio");
     }
   };
 
   return (
     <div className="currentSongWrapper">
-      <PlayingContainer audioRef={audioRef} />
+      {songQueueLength > 0 && (
+        <PlayingContainer
+          audioRef={audioRef}
+          host={host}
+          songIndex={songIndex}
+          onSongEnd={onSongEnd}
+          handleSongSelect={handleSongSelect}
+        />
+      )}
+
       <div id="containerText">
         <h1>Add Songs to start the party</h1>
       </div>
-      <SongPauseButton
-        musicControl={musicControl}
-        toggleMusic={toggleMusic}
-        audioRef={audioRef}
-      />
+      {host && (
+        <SongPauseButton
+          musicControl={musicControl}
+          toggleMusic={toggleMusic}
+          audioRef={audioRef}
+        />
+      )}
+
       <div className="audioProgressBar">
         <canvas id="audioAnalyzer" ref={canvasRef}></canvas>
       </div>

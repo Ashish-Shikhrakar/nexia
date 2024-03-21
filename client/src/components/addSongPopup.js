@@ -1,11 +1,14 @@
-// import { Link } from "react-router-dom";
 import { tracks } from "../Data/tracks";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { SocketContext } from "../context/context";
 
-const AddSongPopup = ({ audioRef }) => {
+const AddSongPopup = ({ audioRef, host, handleSongSelect }) => {
   const socket = useContext(SocketContext);
-  let songId = 0;
+
+  const handleSongClick = (index) => {
+    handleSongSelect(index);
+    closePopup();
+  };
 
   function closePopup() {
     let popupView = document.getElementById("songPopupBox");
@@ -14,70 +17,35 @@ const AddSongPopup = ({ audioRef }) => {
     popupOverlay.style.display = "none";
   }
 
-  // const [isPlaying, setIsPlaying] = useState(false);
-
-  // useEffect(() => {
-  //   if (audioRef && audioRef.current) {
-  //     if (isPlaying) {
-  //       audioRef.current.play();
-  //     } else {
-  //       audioRef.current.pause();
-  //     }
-  //   }
-  // }, [isPlaying, audioRef]);
-
-  // function displaySongContainer() {
-  //   const displayPause = document.getElementById("pauseButton");
-  //   const currentSongDisplay = document.getElementById("playingContainer");
-  //   const containerTextDisplay = document.getElementById("containerText");
-  //   containerTextDisplay.style.display = "none";
-  //   displayPause.style.display = "flex";
-  //   currentSongDisplay.style.display = "flex";
-  // }
-
-  // const togglePlayPause = () => {
-  //   if (isPlaying === true) {
-  //     socket.emit("stopAudio", songId);
-  //   } else {
-  //     socket.emit("startAudio", songId);
-  //   }
-  //   setIsPlaying(!isPlaying);
-  //   closePopup();
-  //   displaySongContainer();
-  // };
-
-  //   if (displayPause.style.display === "flex") {
-  //     displayPause.addEventListener("click", togglePlayPause);
-  //   }
-
   return (
     <>
       <div id="songPopupOverlay"></div>
       <div id="songPopupBox">
         <div className="popupContent">
           <p>Add a Song</p>
-          <div className="songsList">
-            <div
-              className="song"
-              onClick={() => {
-                closePopup();
-                socket.emit("musicStartSignal");
-              }}
-            >
-              <img src={tracks[songId].thumbnail} alt="song" width="100px" />
-              <div className="songInfo">
-                <p>{tracks[songId].title}</p>
-                <p>{tracks[songId].artist}</p>
+          {tracks.map((track, index) => {
+            return (
+              <div className="songsList" key={index}>
+                <div
+                  className="song"
+                  onClick={() => {
+                    handleSongClick(index);
+                    socket.emit("musicStartSignal", host, index);
+                  }}
+                >
+                  <img src={track.thumbnail} alt="song" width="100px" />
+                  <div className="songInfo">
+                    <p>{track.title}</p>
+                    <p>{track.artist}</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })}
           <div className="buttonWrapper">
             <button className="cancelButton" onClick={closePopup}>
               Cancel
             </button>
-            {/* <Link to="/" style={{ width: "30%" }}>
-              <button className="yesButton">Add</button>
-            </Link> */}
           </div>
         </div>
       </div>

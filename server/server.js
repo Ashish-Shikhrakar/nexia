@@ -7,6 +7,7 @@ app.use(cors({ origin: "http://localhost:3000" }));
 server = http.createServer(app);
 
 let availableRoomID = null;
+let hostId = null;
 
 const io = new Server(server, {
   cors: {
@@ -14,22 +15,17 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
 io.on("connection", (socket) => {
   console.log("connected", socket.id);
 
   socket.on("send_generated_UID", (generatedUID) => {
+    hostId = socket.id;
+    console.log(hostId);
     availableRoomID = generatedUID;
     console.log(generatedUID);
     socket.join(availableRoomID);
   });
-
-  // socket.on("validate_code", (code) => {
-  //   if (code === availableRoomID) {
-  //     socket.emit("code_validated", { isValid: true, code: code });
-  //   } else {
-  //     socket.emit("code_validated", { isValid: false });
-  //   }
-  // });
 
   socket.on("join_room", (code) => {
     if (availableRoomID === code) {
@@ -51,7 +47,7 @@ io.on("connection", (socket) => {
 
   socket.on("start_party", () => {
     console.log("Party Started");
-    socket.to(availableRoomID).emit("party_started");
+    io.to(availableRoomID).emit("party_started");
   });
 
   socket.on("stopAudio", (songId) => {
@@ -59,13 +55,19 @@ io.on("connection", (socket) => {
     io.to(availableRoomID).emit("pauseTrack", songId);
   });
 
-  socket.on("startAudio", (songId) => {
+  socket.on("startAudio", (selectedIndex) => {
     console.log("Playing song!");
-    io.to(availableRoomID).emit("playTrack", songId);
+    console.log(hostId);
+    console.log(selectedIndex);
+    io.to(hostId).emit("playTrack", selectedIndex);
   });
 
-  socket.on("musicStartSignal", () => {
-    io.to(availableRoomID).emit("musicStartResponse");
+  socket.on("musicStartSignal", (host, index) => {
+    io.to(availableRoomID).emit("musicStartResponse", host, index);
+  });
+  socket.on("usersAddedMusic", (index) => {
+    console.log("music from user");
+    io.to(hostId).emit("musicStartResponse", true, index);
   });
 
   socket.on("disconnect", () => {

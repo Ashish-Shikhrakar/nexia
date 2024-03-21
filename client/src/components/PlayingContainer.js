@@ -1,56 +1,47 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { tracks } from "../Data/tracks";
 import { SocketContext } from "../context/context";
 
-const PlayingContainer = ({ audioRef }) => {
+const PlayingContainer = ({
+  audioRef,
+  host,
+  songIndex,
+  onSongEnd,
+  handleSongSelect,
+}) => {
   const socket = useContext(SocketContext);
-
-  // useEffect(() => {
-  //   if (audioRef && audioRef.current) {
-  //     if (isPlaying) {
-  //       audioRef.current.play();
-  //     } else {
-  //       audioRef.current.pause();
-  //     }
-  //   }
-  // }, [isPlaying, audioRef]);
-
-  function displaySongContainer() {
-    const displayPause = document.getElementById("pauseButton");
+  let displayPause;
+  audioRef.current.onended = () => onSongEnd();
+  const displaySongContainer = () => {
+    if (host) {
+      displayPause = document.getElementById("pauseButton");
+      displayPause.style.display = "flex";
+    }
     const currentSongDisplay = document.getElementById("playingContainer");
     const containerTextDisplay = document.getElementById("containerText");
     containerTextDisplay.style.display = "none";
-    displayPause.style.display = "flex";
     currentSongDisplay.style.display = "flex";
-  }
-  const togglePlayPause = () => {
-    socket.emit("startAudio");
-    displaySongContainer();
   };
-  socket.on("musicStartResponse", () => {
-    console.log("start music");
-    togglePlayPause();
+  socket.on("musicStartResponse", (host, selectedIndex) => {
+    if (host) {
+      audioRef.current.play();
+    } else {
+      console.log("I picked a song!");
+      socket.emit("startAudio", selectedIndex);
+    }
+    displaySongContainer();
   });
-  // useEffect(() => {
-  //   socket.on("pauseTrack", (songId) => {
-  //     console.log("paused");
-  //     audioRef.current.play();
-  //   });
-  //   socket.on("playTrack", (songId) => {
-  //     console.log("played");
-  //     audioRef.current.pause();
-  //   });
-  // }, [audioRef, socket]);
+
   return (
     <div id="playingContainer">
       <div className="thumbnail">
-        <img src={tracks[0].thumbnail} alt="" className="thumbImg" />
+        <img src={tracks[songIndex].thumbnail} alt="" className="thumbImg" />
       </div>
-
+      <button onClick={onSongEnd}>Next Song</button>
       <div className="songDetails">
-        <p className="authorName">{tracks[0].author}</p>
-        <p className="songName">{tracks[0].title}</p>
-        <audio src={tracks[0].src} ref={audioRef} id="audio"></audio>
+        <p className="authorName">{tracks[songIndex].author}</p>
+        <p className="songName">{tracks[songIndex].title}</p>
+        <audio src={tracks[songIndex].src} ref={audioRef} id="audio"></audio>
       </div>
     </div>
   );
