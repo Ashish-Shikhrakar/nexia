@@ -86,6 +86,7 @@ const SongWrapper = ({
           songIndex={songIndex}
           onSongEnd={onSongEnd}
           handleSongSelect={handleSongSelect}
+          songQueueLength={songQueueLength}
         />
       )}
 

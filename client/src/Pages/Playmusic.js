@@ -4,7 +4,7 @@ import Popup from "../components/Popup";
 import AddSongButton from "../components/addSongButton";
 import AddSongPopup from "../components/addSongPopup";
 import SongWrapper from "../components/SongWrapper";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { SocketContext } from "../context/context";
 

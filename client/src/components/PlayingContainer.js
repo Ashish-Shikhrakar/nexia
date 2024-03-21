@@ -7,6 +7,7 @@ const PlayingContainer = ({
   host,
   songIndex,
   onSongEnd,
+  songQueueLength,
   handleSongSelect,
 }) => {
   const socket = useContext(SocketContext);
@@ -37,7 +38,15 @@ const PlayingContainer = ({
       <div className="thumbnail">
         <img src={tracks[songIndex].thumbnail} alt="" className="thumbImg" />
       </div>
-      <button onClick={onSongEnd}>Next Song</button>
+      <button
+        onClick={() => {
+          if (songQueueLength > 0) {
+            onSongEnd();
+          }
+        }}
+      >
+        Next Song
+      </button>
       <div className="songDetails">
         <p className="authorName">{tracks[songIndex].author}</p>
         <p className="songName">{tracks[songIndex].title}</p>

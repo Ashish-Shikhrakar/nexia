@@ -23,7 +23,7 @@ a {
 .navbar1 {
   background-color: var(--nav-background);
   color: var(--nav-text);
-  padding: 15px;
+  padding: 15px 0px;
   display: flex;
   justify-content: center;
   align-items: center;
