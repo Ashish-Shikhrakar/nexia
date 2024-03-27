@@ -7,6 +7,7 @@ import SongWrapper from "../components/SongWrapper";
 import { useContext, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { SocketContext } from "../context/context";
+import SongsQueue from "../components/SongsQueue";
 
 const PlayMusic = (props) => {
   useDynamicPageTitle({ title: props.title });
@@ -30,7 +31,6 @@ const PlayMusic = (props) => {
   }
 
   socket.on("playTrack", (passedIndex) => {
-    console.log("Song index:", passedIndex);
     handleSongSelect(passedIndex);
     socket.emit("usersAddedMusic", passedIndex);
   });
@@ -40,21 +40,23 @@ const PlayMusic = (props) => {
       <Navbar navStyle="navbar2" />
       <div className="musicPageWrapper">
         <AddSongButton />
-        <SongWrapper
-          audioRef={audioRef}
-          host={host}
-          songQueueLength={selectedSongIndex.length}
-          songIndex={selectedSongIndex[0]}
-          onSongEnd={() => setSelectedSongIndex(selectedSongIndex.slice(1))}
-          handleSongSelect={handleSongSelect}
-        />
-
-        <Popup />
-        <AddSongPopup
-          audioRef={audioRef}
-          host={host}
-          handleSongSelect={handleSongSelect}
-        />
+        <div className="displayContainer">
+          <SongWrapper
+            audioRef={audioRef}
+            host={host}
+            songQueueLength={selectedSongIndex.length}
+            songIndex={selectedSongIndex[0]}
+            onSongEnd={() => setSelectedSongIndex(selectedSongIndex.slice(1))}
+            handleSongSelect={handleSongSelect}
+          />
+          <SongsQueue selectedSongIndex={selectedSongIndex} />
+          <Popup />
+          <AddSongPopup
+            audioRef={audioRef}
+            host={host}
+            handleSongSelect={handleSongSelect}
+          />
+        </div>
       </div>
     </div>
   );

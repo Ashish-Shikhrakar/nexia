@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { tracks } from "../Data/tracks";
 import { SocketContext } from "../context/context";
+import { useSongArray } from "../context/songArrayContext";
 
 const PlayingContainer = ({
   audioRef,
@@ -11,8 +12,9 @@ const PlayingContainer = ({
   handleSongSelect,
 }) => {
   const socket = useContext(SocketContext);
+  const { selectedSongArray, setselectedSongArray } = useSongArray();
   let displayPause;
-  audioRef.current.onended = () => onSongEnd();
+  // audioRef.current.onended = () => onSongEnd();
   const displaySongContainer = () => {
     if (host) {
       displayPause = document.getElementById("pauseButton");
@@ -23,35 +25,53 @@ const PlayingContainer = ({
     containerTextDisplay.style.display = "none";
     currentSongDisplay.style.display = "flex";
   };
-  socket.on("musicStartResponse", (host, selectedIndex) => {
-    if (host) {
-      audioRef.current.play();
-    } else {
-      console.log("I picked a song!");
-      socket.emit("startAudio", selectedIndex);
-    }
-    displaySongContainer();
+  useEffect(() => {
+    socket.on("musicStartHost", (selectedIndex) => {
+      setselectedSongArray((selectedSongArray) => [
+        ...selectedSongArray,
+        selectedIndex,
+      ]);
+      displaySongContainer();
+      handleSongSelect(selectedIndex);
+      if (!(songQueueLength > 0) && songIndex) {
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play();
+        }
+      }
+    });
+    socket.on("musicStartUser", (selectedIndex) => {
+      setselectedSongArray((selectedSongArray) => [
+        ...selectedSongArray,
+        selectedIndex,
+      ]);
+      displaySongContainer();
+      handleSongSelect(selectedIndex);
+    });
   });
 
   return (
     <div id="playingContainer">
-      <div className="thumbnail">
-        <img src={tracks[songIndex].thumbnail} alt="" className="thumbImg" />
-      </div>
-      <button
-        onClick={() => {
-          if (songQueueLength > 0) {
-            onSongEnd();
-          }
-        }}
-      >
-        Next Song
-      </button>
-      <div className="songDetails">
-        <p className="authorName">{tracks[songIndex].author}</p>
-        <p className="songName">{tracks[songIndex].title}</p>
-        <audio src={tracks[songIndex].src} ref={audioRef} id="audio"></audio>
-      </div>
+      {songQueueLength > 0 && (
+        <>
+          <div className="thumbnail">
+            <img
+              src={tracks[songIndex].thumbnail}
+              alt="thumbImg"
+              className="thumbImg"
+            />
+          </div>
+          <div className="songDetails">
+            <p className="authorName">{tracks[songIndex].author}</p>
+            <p className="songName">{tracks[songIndex].title}</p>
+            <audio
+              src={tracks[songIndex].src}
+              ref={audioRef}
+              id="audio"
+            ></audio>
+          </div>
+        </>
+      )}
     </div>
   );
 };

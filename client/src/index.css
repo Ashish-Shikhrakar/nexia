@@ -52,6 +52,7 @@ a {
   display: flex;
   align-items: center;
   color: var(--nav-text);
+  cursor: pointer;
 }
 
 .hostButton {
@@ -431,7 +432,6 @@ select {
   align-items: center;
   /* justify-content: center; */
   flex-direction: column;
-  height: 100vh;
   color: var(--host-party);
   margin-top: 30px;
 }
@@ -441,7 +441,7 @@ select {
   color: var(--host-party);
   cursor: pointer;
   border-radius: 50px;
-  width: 68%;
+  width: 75%;
   height: 45px;
   font-size: 18px;
   font-weight: normal;
@@ -460,8 +460,48 @@ select {
   align-items: center;
   position: relative;
   overflow: hidden;
+  margin-left: auto;
 }
 
+.voteButton {
+  position: absolute;
+  top: 16px;
+  right: 48px;
+  cursor: pointer;
+}
+
+.displayContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+.queueTitle {
+  position: sticky;
+  top: 0;
+  padding: 24px 12px;
+  background: var(--host-bg);
+}
+
+.songsQueue {
+  position: relative;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  overflow-y: scroll;
+}
+
+.songQueueList {
+  display: flex;
+  padding: 24px 12px;
+  flex-direction: column;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid black;
+}
 .thumbnail {
   width: 150px;
   border-radius: 100px;
@@ -510,7 +550,30 @@ select {
   border-radius: 20px;
 }
 
+#confirmToSkipPopup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  background-color: var(--popup-bg);
+  width: 30%;
+  height: 200px;
+  border-radius: 20px;
+}
+
 #popupOverlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  display: none;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9;
+}
+#popupOverlay2 {
   width: 100%;
   height: 100%;
   position: fixed;
@@ -548,7 +611,9 @@ select {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding: 0 24px;
+  gap: 12px;
   color: var(--white);
   width: 100%;
   height: 100%;

@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
 
   socket.on("send_name", (name, id) => {
     currentUser = name;
-    socket.to(availableRoomID).emit("receive_name", name, id);
+    io.to(availableRoomID).emit("receive_name", name, id);
   });
 
   socket.on("start_party", () => {
@@ -50,23 +50,25 @@ io.on("connection", (socket) => {
     io.to(availableRoomID).emit("party_started");
   });
 
-  socket.on("stopAudio", (songId) => {
-    console.log("Pausing song!");
-    io.to(availableRoomID).emit("pauseTrack", songId);
-  });
-
   socket.on("startAudio", (selectedIndex) => {
-    console.log("Playing song!");
-    console.log(hostId);
-    console.log(selectedIndex);
     io.to(hostId).emit("playTrack", selectedIndex);
   });
 
-  socket.on("musicStartSignal", (host, index) => {
-    io.to(availableRoomID).emit("musicStartResponse", host, index);
+  socket.on("musicStartSignal", (index) => {
+    io.to(hostId).emit("musicStartHost", index);
+    io.to(availableRoomID).except(hostId).emit("musicStartUser", index);
   });
+
+  socket.on("incrementCount", (vote) => {
+    console.log(vote);
+    socket.to(availableRoomID).emit("skipVoteIncrement", vote);
+  });
+
+  socket.on("nextSong", () => {
+    io.to(availableRoomID).emit("startNextSong");
+  });
+
   socket.on("usersAddedMusic", (index) => {
-    console.log("music from user");
     io.to(hostId).emit("musicStartResponse", true, index);
   });
 

@@ -1,14 +1,11 @@
 import { tracks } from "../Data/tracks";
 import { useContext } from "react";
 import { SocketContext } from "../context/context";
+import { useSongArray } from "../context/songArrayContext";
 
 const AddSongPopup = ({ audioRef, host, handleSongSelect }) => {
   const socket = useContext(SocketContext);
-
-  const handleSongClick = (index) => {
-    handleSongSelect(index);
-    closePopup();
-  };
+  const { selectedSongArray, setselectedSongArray } = useSongArray();
 
   function closePopup() {
     let popupView = document.getElementById("songPopupBox");
@@ -16,6 +13,15 @@ const AddSongPopup = ({ audioRef, host, handleSongSelect }) => {
     popupView.style.display = "none";
     popupOverlay.style.display = "none";
   }
+  const handleSongArray = (index) => {
+    if (!selectedSongArray.includes(index)) {
+      setselectedSongArray((selectedSongArray) => [
+        ...selectedSongArray,
+        index,
+      ]);
+      socket.emit("musicStartSignal", index);
+    }
+  };
 
   return (
     <>
@@ -29,8 +35,8 @@ const AddSongPopup = ({ audioRef, host, handleSongSelect }) => {
                 <div
                   className="song"
                   onClick={() => {
-                    handleSongClick(index);
-                    socket.emit("musicStartSignal", host, index);
+                    handleSongArray(index);
+                    closePopup();
                   }}
                 >
                   <img src={track.thumbnail} alt="song" width="100px" />

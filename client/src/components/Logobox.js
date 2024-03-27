@@ -8,8 +8,12 @@ const Logobox = ({ logoProperties, color }) => {
   } else {
     logo = logo2;
   }
+
+  const handleClick = () => {
+    window.location.href = "/";
+  };
   return (
-    <div className="logobox">
+    <div className="logobox" onClick={handleClick}>
       <img
         src={logo}
         alt="logo"

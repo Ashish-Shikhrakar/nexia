@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "../context/context";
+import { useSettings } from "../context/settingsContext";
 
 const ClientSettings = ({ joinCode }) => {
   const [selectedValue, setSelectedValue] = useState({});
   const socket = useContext(SocketContext);
+  const { selectedOption, setSelectedOption } = useSettings();
 
   useEffect(() => {
     socket.emit("join_room", joinCode);
@@ -15,10 +17,15 @@ const ClientSettings = ({ joinCode }) => {
   }, []);
 
   useEffect(() => {
-    socket.on("host_value_change", ({ name, value }) => {
+    socket.on("host_value_change", ({ nickname, valueOutput }) => {
       setSelectedValue((prevState) => ({
         ...prevState,
-        [name]: value,
+        [nickname]: valueOutput,
+      }));
+
+      setSelectedOption((prevState) => ({
+        ...prevState,
+        [nickname]: parseInt(valueOutput, 10),
       }));
     });
   });
@@ -38,7 +45,7 @@ const ClientSettings = ({ joinCode }) => {
         <div className="switch">
           <select className="votes" id="votes" disabled>
             <option value={selectedValue.votes || "5"}>
-              {selectedValue.votes || 5}
+              {selectedValue.votes || 2}
             </option>
           </select>
           <label htmlFor="votes"> Votes to skip song</label>

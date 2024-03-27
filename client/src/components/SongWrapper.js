@@ -1,9 +1,13 @@
 import Pause from "../assets/pause.png";
 import Play from "../assets/play.png";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import SongPauseButton from "./SongPauseButton";
 import PlayingContainer from "./PlayingContainer";
+import { useSettings } from "../context/settingsContext";
+import ConfirmSkipPopup from "./ConfirmSkipPopup";
+import VoteButton from "./VoteButton";
+import { SocketContext } from "../context/context";
 
 const SongWrapper = ({
   audioRef,
@@ -13,8 +17,13 @@ const SongWrapper = ({
   songQueueLength,
   handleSongSelect,
 }) => {
+  const socket = useContext(SocketContext);
+
   const canvasRef = useRef(null);
-  const [musicControl, setMusicControl] = useState(Pause);
+  const [musicControl, setMusicControl] = useState(Play);
+  const { selectedOption } = useSettings();
+  const [vote, setVote] = useState(0);
+  const [alreadyVoted, setAlreadyVoted] = useState(false);
 
   // useEffect(() => {
   //   const canvas = canvasRef.current;
@@ -77,18 +86,40 @@ const SongWrapper = ({
     }
   };
 
+  const incrementCount = () => {
+    const newCount = vote + 1;
+    setVote(newCount);
+    socket.emit("incrementCount", newCount);
+  };
+  useEffect(() => {
+    socket.on("skipVoteIncrement", (vote) => {
+      setVote(vote);
+    });
+
+    socket.on("startNextSong", () => {
+      if (songQueueLength > 0 && vote === selectedOption.votes) {
+        onSongEnd();
+        setVote(0);
+      }
+    });
+  });
+
   return (
     <div className="currentSongWrapper">
-      {songQueueLength > 0 && (
-        <PlayingContainer
-          audioRef={audioRef}
-          host={host}
-          songIndex={songIndex}
-          onSongEnd={onSongEnd}
-          handleSongSelect={handleSongSelect}
-          songQueueLength={songQueueLength}
-        />
-      )}
+      <VoteButton
+        vote={vote}
+        selectedOption={selectedOption.votes}
+        alreadyVoted={alreadyVoted}
+        songQueueLength={songQueueLength}
+      />
+      <PlayingContainer
+        audioRef={audioRef}
+        host={host}
+        songIndex={songIndex}
+        onSongEnd={onSongEnd}
+        handleSongSelect={handleSongSelect}
+        songQueueLength={songQueueLength}
+      />
 
       <div id="containerText">
         <h1>Add Songs to start the party</h1>
@@ -101,6 +132,10 @@ const SongWrapper = ({
         />
       )}
 
+      <ConfirmSkipPopup
+        incrementCount={incrementCount}
+        setAlreadyVoted={setAlreadyVoted}
+      />
       <div className="audioProgressBar">
         <canvas id="audioAnalyzer" ref={canvasRef}></canvas>
       </div>
