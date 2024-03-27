@@ -13,7 +13,7 @@ const ConfirmSkipPopup = ({ incrementCount, setAlreadyVoted }) => {
     <>
       <div id="popupOverlay2"></div>
       <div id="confirmToSkipPopup">
-        <div className="popupContent">
+        <div className="popupContent2">
           <p>You are about the NEIN the current song.</p>
           <p>Are you sure you’d like to vote to skip this song?</p>
           <div className="buttonWrapper">
